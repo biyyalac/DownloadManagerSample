@@ -4,10 +4,13 @@ import android.R
 import android.app.DownloadManager
 import android.app.DownloadManager.Request
 import android.content.Context
+import android.content.Context.RECEIVER_NOT_EXPORTED
+import android.content.IntentFilter
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -64,10 +67,17 @@ lateinit var request:Request
             .setRequiresCharging(false)// Set if charging is required to begin the download
             .setAllowedOverMetered(true)// Set if download is allowed on Mobile network
             .setAllowedOverRoaming(true);
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+
         binding.buttonFirst.setOnClickListener {
            // findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
            val dowloadValue= downloadManager.enqueue(request)
             Log.e("dowloadValue ","dowloadValue $dowloadValue")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                activity?.registerReceiver(DownloadReceiver(), IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),RECEIVER_NOT_EXPORTED)
+            }
+
+
         }
 
 
